@@ -73,29 +73,68 @@ const movies = [
   },
 ];
 
-
-const MONGO_URL="mongodb://localhost:"
+const MONGO_URL = "mongodb+srv://root:root@cluster0.xvho7.mongodb.net";
 
 async function createConnection() {
   const client = new MongoClient(MONGO_URL);
-  await client.connect()
+  await client.connect();
   console.log("MongoDB connected");
-  return client
+  return client;
 }
-const client= await createConnection()
-
-
+const client = await createConnection();
+app.use(express.json())
 app.get("/", function (request, response) {
   response.send("hello");
 });
+
 app.get("/movies", function (request, response) {
   response.send(movies);
 });
+
 app.get("/movies/:id", async function (request, response) {
   const { id } = request.params;
-  const movie= await client.db("agilisium").collection("agilisium").findOne({ id:id})
+  const movie = await client
+    .db("agilisium")
+    .collection("agilisium")
+    .findOne({ id: id });
   //response.send(movies.find((movie) => movie.id == id));
   response.send(movie);
+  movie
+    ? response.send(movie)
+    : response.status(404).send({ message: "No such movie" });
+});
+app.post("/movies", async function (request, response) {
+    const newMovies = request.body;
+    // console.log(newMovies);
+    // db.movies.insertMany(data)
+  
+    const result = await client
+      .db("agilisium")
+      .collection("agilisium")
+      .insertMany(newMovies);
+    response.send(result);
+  });
+  
+
+app.delete("/movies/:id", async function (request, response) {
+  const { id } = request.params;
+  const movie = await client
+    .db("agilisium")
+    .collection("agilisium")
+    .deleteOne({ id: id });
+  //response.send(movies.find((movie) => movie.id == id));
+  response.send(movie);
+});
+
+app.put("/movies/:id", async function (request, response) {
+  const { id } = request.params;
+  const updateDetails = request.body;
+  const result = await client
+    .db("agilisium")
+    .collection("agilisium")
+    .updateOne({ id: id },{$set:updateDetails});
+  //response.send(movies.find((movie) => movie.id == id));
+  response.send(result);
 });
 
 app.listen(PORT, () => console.log(`Server is started:${PORT}`));
