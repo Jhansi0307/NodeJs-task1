@@ -1,4 +1,5 @@
 import express from "express";
+import { MongoClient } from "mongodb";
 const app = express();
 const PORT = 4000;
 const movies = [
@@ -72,15 +73,29 @@ const movies = [
   },
 ];
 
+
+const MONGO_URL="mongodb://localhost:"
+
+async function createConnection() {
+  const client = new MongoClient(MONGO_URL);
+  await client.connect()
+  console.log("MongoDB connected");
+  return client
+}
+const client= await createConnection()
+
+
 app.get("/", function (request, response) {
   response.send("hello");
 });
 app.get("/movies", function (request, response) {
-    response.send(movies);
-  });
-  app.get("/movies/:id", function (request, response) {
-    const {id}=request.params
-    response.send(movies.find((movie)=>movie.id==id))
-  });
+  response.send(movies);
+});
+app.get("/movies/:id", async function (request, response) {
+  const { id } = request.params;
+  const movie= await client.db("agilisium").collection("agilisium").findOne({ id:id});
+  //response.send(movies.find((movie) => movie.id == id));
+  response.send(movie);
+});
 
 app.listen(PORT, () => console.log(`Server is started:${PORT}`));
