@@ -93,7 +93,7 @@ app.get("/movies", function (request, response) {
 });
 app.get("/movies/:id", async function (request, response) {
   const { id } = request.params;
-  const movie= await client.db("agilisium").collection("agilisium").findOne({ id:id});
+  const movie= await client.db("agilisium").collection("agilisium").findOne({ id:id})
   //response.send(movies.find((movie) => movie.id == id));
   response.send(movie);
 });
