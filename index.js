@@ -3,14 +3,14 @@ import dotenv from "dotenv";
 import express from "express"; // "type": "module",
 import { MongoClient } from "mongodb";
 import {moviesRouter} from "./router/movies.js"
-
+import cors from "cors";
 
 dotenv.config();
 
 const app = express();
 //console.log(process.env.MONGO_URL);
-
-const PORT = 4000;
+app.use(cors())
+const PORT = process.env.PORT;
 
 // const MONGO_URL = "mongodb://localhost";
 
